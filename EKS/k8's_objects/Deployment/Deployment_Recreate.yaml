@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer
+  labels:
+    app: packersmovers
+spec:
+  strategy:
+    type: Recreate
+  replicas: 4
+  selector:
+    matchLabels:
+      app: packersmovers
+  template:
+    metadata:
+      labels:
+        app: packersmovers
+    spec:
+      containers:
+      - name: customer
+        image: 841162679093.dkr.ecr.us-east-1.amazonaws.com/customer:5
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /customer/ping          # Endpoint to check for readiness (adjust according to your app)
+            port: 8080
+          initialDelaySeconds: 20    # Wait 20 seconds before the first probe
+          periodSeconds: 5         # Probe every 5 seconds
+          timeoutSeconds: 2         # Timeout if the probe takes longer than 2 seconds
+          failureThreshold: 3       # Mark the Pod as not ready after 3 consecutive failures        
